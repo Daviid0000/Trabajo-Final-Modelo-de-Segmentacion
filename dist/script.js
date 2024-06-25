@@ -1,85 +1,56 @@
-import DeviceDetector from "https://cdn.skypack.dev/device-detector-js@2.2.10";
-// Usage: testSupport({client?: string, os?: string}[])
-// Client and os are regular expressions.
-// See: https://cdn.jsdelivr.net/npm/device-detector-js@2.2.10/README.md for
-// legal values for client and os
-testSupport([
-    { client: 'Chrome' },
-]);
-function testSupport(supportedDevices) {
-    const deviceDetector = new DeviceDetector();
-    const detectedDevice = deviceDetector.parse(navigator.userAgent);
-    let isSupported = false;
-    for (const device of supportedDevices) {
-        if (device.client !== undefined) {
-            const re = new RegExp(`^${device.client}$`);
-            if (!re.test(detectedDevice.client.name)) {
-                continue;
-            }
-        }
-        if (device.os !== undefined) {
-            const re = new RegExp(`^${device.os}$`);
-            if (!re.test(detectedDevice.os.name)) {
-                continue;
-            }
-        }
-        isSupported = true;
-        break;
-    }
-    if (!isSupported) {
-        alert(`This demo, running on ${detectedDevice.client.name}/${detectedDevice.os.name}, ` +
-            `is not well supported at this time, continue at your own risk.`);
-    }
-}
-/**
- * @fileoverview Demonstrates a minimal use case for MediaPipe face tracking.
- */
 const controls = window;
 const mpSelfieSegmentation = window;
 const examples = {
     images: [],
-    // {name: 'name', src: 'https://url.com'},
     videos: [],
 };
-// Our input frames will come from here.
+
+// Se obtienen los elementos creados en el HTML
 const videoElement = document.getElementsByClassName('input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const controlsElement = document.getElementsByClassName('control-panel')[0];
-const canvasCtx = canvasElement.getContext('2d');
-// We'll add this to our control panel later, but we'll save it here so we can
-// call tick() each time the graph runs.
+const canvasCtx = canvasElement.getContext('2d'); // Se obtiene el contexto 2d del canva
+
+
+// Se crea un panel de control para visualizar los fotogramas por segundo
 const fpsControl = new controls.FPS();
-// Optimization: Turn off animated spinner after its hiding animation is done.
+
+// Se obtiene el la animación de carga y se establece en 'display: none' para ocultarlo cuando se termina de cargara el modelo
 const spinner = document.querySelector('.loading');
 spinner.ontransitionend = () => {
     spinner.style.display = 'none';
 };
 let activeEffect = 'mask';
 function onResults(results) {
-    // Hide the spinner.
-    document.body.classList.add('loaded');
-    // Update the frame rate.
-    fpsControl.tick();
-    // Draw the overlays.
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(results.segmentationMask, 0, 0, canvasElement.width, canvasElement.height);
-    // Only overwrite existing pixels.
+    
+    document.body.classList.add('loaded'); // Cuando se carga el modelo se le agrega la clase 'loaded' al body y desaparece la animación de loading
+    
+    fpsControl.tick(); // Actualiza los fotogramas por segundo
+    
+    canvasCtx.save(); // Guarda el estado actual del contexto del canva
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height); // Limpia el canva
+    canvasCtx.drawImage(results.segmentationMask, 0, 0, canvasElement.width, canvasElement.height); // Añade el filtro del modelo
+    
+    // Si 'activeEffect' = 'mas' o 'both' se dibujarán el video con el filtro en el canva
     if (activeEffect === 'mask' || activeEffect === 'both') {
         canvasCtx.globalCompositeOperation = 'source-in';
-        // This can be a color or a texture or whatever...
-        canvasCtx.fillStyle = '#00FF007F';
-        canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+        
+        canvasCtx.fillStyle = '#00FF007F'; // Define el color de relleno como verde con transparencia.
+        canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height); // Rellena el lienzo con el color especificado.
     }
+
+    // En caso de que 'activeEffect' sea tenga un valor como 'background' se dibujará el video sin el filtro en el canva
     else {
         canvasCtx.globalCompositeOperation = 'source-out';
-        canvasCtx.fillStyle = '#0000FF7F';
-        canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.fillStyle = '#0000FF7F'; // Define el color de relleno como azul con transparencia.
+        canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height); // Rellena el lienzo con el color especificado.
     }
-    // Only overwrite missing pixels.
+
     canvasCtx.globalCompositeOperation = 'destination-atop';
     canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
     canvasCtx.restore();
+
+    
 }
 const selfieSegmentation = new SelfieSegmentation({ locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}`;
@@ -87,6 +58,7 @@ const selfieSegmentation = new SelfieSegmentation({ locateFile: (file) => {
 selfieSegmentation.onResults(onResults);
 // Present a control panel through which the user can manipulate the solution
 // options.
+// Se crea un panel de control el cual puede ser configurado al gusto del usuario
 new controls
     .ControlPanel(controlsElement, {
     selfieMode: true,
@@ -135,3 +107,4 @@ new controls
     activeEffect = x['effect'];
     selfieSegmentation.setOptions(options);
 });
+
