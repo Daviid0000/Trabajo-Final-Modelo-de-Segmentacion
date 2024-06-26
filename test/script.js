@@ -55,7 +55,6 @@ function detectMotion(currentImageData) {
 }
 
 function onResults(results) {
-    
     document.body.classList.add('loaded'); // Cuando se carga el modelo se le agrega la clase 'loaded' al body y desaparece la animación de loading
     
     fpsControl.tick(); // Actualiza los fotogramas por segundo
@@ -64,14 +63,12 @@ function onResults(results) {
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height); // Limpia el canva
     canvasCtx.drawImage(results.segmentationMask, 0, 0, canvasElement.width, canvasElement.height); // Añade el filtro del modelo
     
-    // Si 'activeEffect' = 'mas' o 'both' se dibujarán el video con el filtro en el canva
+    // Si 'activeEffect' = 'mask' o 'both' se dibujarán el video con el filtro en el canva
     if (activeEffect === 'mask' || activeEffect === 'both') {
         canvasCtx.globalCompositeOperation = 'source-in';
         canvasCtx.fillStyle = '#00FF007F'; // Define el color de relleno como verde con transparencia.
         canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height); // Rellena el lienzo con el color especificado.
-    }
-    // En caso de que 'activeEffect' sea tenga un valor como 'background' se dibujará el video sin el filtro en el canva
-    else {
+    } else {
         canvasCtx.globalCompositeOperation = 'source-out';
         canvasCtx.fillStyle = '#0000FF7F'; // Define el color de relleno como azul con transparencia.
         canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height); // Rellena el lienzo con el color especificado.
@@ -93,71 +90,68 @@ function onResults(results) {
 }
 
 // Crea una instancia de SelfieSegmentation con una función para localizar los archivos necesarios.
-const selfieSegmentation = new SelfieSegmentation({ locateFile: (file) => {
+const selfieSegmentation = new SelfieSegmentation({
+    locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}`;
-    } 
+    }
 });
-
 selfieSegmentation.onResults(onResults); // Establece 'onResults' como el controlador de eventos para los resultados de segmentación.
 
 // Se crea un panel de control el cual puede ser configurado al gusto del usuario.
 new controls
     .ControlPanel(controlsElement, {
-    selfieMode: true,
-    modelSelection: 1,
-    effect: 'mask',
-})
-//  Añade varios controles al panel.
+        selfieMode: true,
+        modelSelection: 1,
+        effect: 'mask',
+    })
+    // Añade varios controles al panel.
     .add([
-    new controls.StaticText({ title: 'Panel de control' }), // Agrega un texto estático como título en el panel de control.
-    fpsControl,     // Se añade el control de los fps
-    new controls.Toggle({ title: 'Modo Selfie', field: 'selfieMode' }), // Añade un interruptor para el modo selfie
-    
-    // Se añade un selector de fuente para cambiar la fuente de entrada
-    new controls.SourcePicker({
-        onSourceChanged: () => { // Se restablece 'selfieSegmentation' cuando se cambia la fuente.
-            selfieSegmentation.reset();
-        },
+        new controls.StaticText({ title: 'Panel de control' }), // Agrega un texto estático como título en el panel de control.
+        fpsControl, // Se añade el control de los fps
+        new controls.Toggle({ title: 'Modo Selfie', field: 'selfieMode' }), // Añade un interruptor para el modo selfie
 
-        // Procesa cada cuadro de entrada, ajustando el tamaño del lienzo y enviando la imagen a selfieSegmentation.
-        onFrame: async (input, size) => {
-            const aspect = size.height / size.width;
-            let width, height;
-            if (window.innerWidth > window.innerHeight) {
-                height = window.innerHeight;
-                width = height / aspect;
-            }
-            else {
-                width = window.innerWidth;
-                height = width * aspect;
-            }
-            canvasElement.width = width;
-            canvasElement.height = height;
-            await selfieSegmentation.send({ image: input });
-        },
-        examples: examples
-    }),
+        // Se añade un selector de fuente para cambiar la fuente de entrada
+        new controls.SourcePicker({
+            onSourceChanged: () => { // Se restablece 'selfieSegmentation' cuando se cambia la fuente.
+                selfieSegmentation.reset();
+            },
 
-    // Añade un control deslizante para seleccionar el modelo.
-    new controls.Slider({
-        title: 'Selección del modelo',
-        field: 'modelSelection',
-        discrete: ['General', 'Landscape'],
-    }),
+            // Procesa cada cuadro de entrada, ajustando el tamaño del lienzo y enviando la imagen a selfieSegmentation.
+            onFrame: async (input, size) => {
+                const aspect = size.height / size.width;
+                let width, height;
+                if (window.innerWidth > window.innerHeight) {
+                    height = window.innerHeight;
+                    width = height / aspect;
+                } else {
+                    width = window.innerWidth;
+                    height = width * aspect;
+                }
+                canvasElement.width = width;
+                canvasElement.height = height;
+                await selfieSegmentation.send({ image: input });
+            },
+            examples: examples
+        }),
 
-    // Añade un control deslizante para seleccionar el efecto.
-    new controls.Slider({
-        title: 'Efecto',
-        field: 'effect',
-        discrete: { 'background': 'Background', 'mask': 'Foreground' },
-    }),
-])
+        // Añade un control deslizante para seleccionar el modelo.
+        new controls.Slider({
+            title: 'Selección del modelo',
+            field: 'modelSelection',
+            discrete: ['General', 'Landscape'],
+        }),
 
+        // Añade un control deslizante para seleccionar el efecto.
+        new controls.Slider({
+            title: 'Efecto',
+            field: 'effect',
+            discrete: { 'background': 'Background', 'mask': 'Foreground' },
+        }),
+    ])
     // Establece un controlador para cuando cambian las opciones del panel.
     .on(x => {
-    const options = x;
-    videoElement.classList.toggle('selfie', options.selfieMode);
-    activeEffect = x['effect'];
-    selfieSegmentation.setOptions(options);
-});
-
+        const options = x;
+        videoElement.classList.toggle('selfie', options.selfieMode);
+        activeEffect = x['effect'];
+        selfieSegmentation.setOptions(options);
+    });
