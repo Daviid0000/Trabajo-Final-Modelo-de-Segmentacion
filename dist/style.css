@@ -6,17 +6,6 @@
     transform: rotate(360deg);
   }
 }
-.abs {
-  position: absolute;
-}
-
-a {
-  color: white;
-  text-decoration: none;
-}
-a:hover {
-  color: lightblue;
-}
 
 body {
   bottom: 0;
@@ -32,7 +21,7 @@ body {
 }
 
 .container {
-  position: absolute;
+  position: relative;
   background-color: #222;
   width: 100%;
   max-height: 100%;
@@ -40,15 +29,6 @@ body {
   padding-bottom: 300px;
 }
 
-.input_video {
-
-  /* display: block; */
-  /* position: relative;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0; */
-}
 .input_video.selfie {
   transform: scale(-1, 1);
 }
@@ -58,6 +38,7 @@ body {
 }
 
 .canvas-container {
+  position: relative;
   display: flex;
   height: 100%;
   width: 100%;
@@ -65,16 +46,17 @@ body {
   align-items: center;
 }
 
-.output_canvas, .output_canvas2 {
-  max-width: 100%;
-  display: block;
-  position: relative;
-  left: 0;
-  top: 0;
-
- 
+.output_canvas {
+  width: 700px;
+  height: 500px;
+  border: 1px solid #fff;
+  display: flex;
+  margin-top: -150px;
 }
-
+.output_canvas2 {
+  display: none;
+  height: 200px;
+}
 
 .logo {
   bottom: 10px;
@@ -96,6 +78,11 @@ body {
   position: absolute;
   left: 10px;
   top: 10px;
+}
+
+.control-panel-expander {
+  top: 60px;
+  left: 290px;
 }
 
 .loading {
@@ -122,6 +109,7 @@ body {
   border: 32px solid #bebebe;
   border-top: 32px solid #3498db;
   border-radius: 50%;
+  top: 250px;
 }
 
 .loaded .loading {
@@ -135,4 +123,65 @@ body {
   text-align: center;
   font-size: 24px;
   position: absolute;
+}
+
+.overlay {
+  position: absolute;
+  top: -150px;
+  left: 67px;
+  width: 700px;
+  height: 500px;
+  background-color: rgba(255, 0, 0, 0.5);
+  display: none;
+}
+
+.toggle-button {
+  position: relative;
+  display: inline-block;
+  padding: 20px 100px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: auto;
+}
+
+.button-left, .button-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.button-left {
+  left: 0;
+  background-color: #5d5d5d; /* Color izquierdo (activo) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-right {
+  right: 0;
+  background-color: #b9b9b9; /* Color derecho (inactivo) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.active .button-left {
+  background-color: #b9b9b9; /* Cambia al color derecho cuando activo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.active .button-right {
+  background-color: #5d5d5d; /* Cambia al color izquierdo cuando activo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

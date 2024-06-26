@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>MediaPipe - Selfie Segmentation</title>
-    <meta charset="utf-8">
+  <meta charset="utf-8">
   <link rel="icon" href="favicon.ico">
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="demo.css" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
@@ -18,32 +18,26 @@
     <video class="input_video"></video>
 
     <div class="canvas-container">
-      <canvas class="output_canvas" style="width: 700px; height: 500px; border: 1px solid #fff; display: flex; margin-top: -150px;">
-      </canvas>
-      <canvas class="output_canvas2" style="display: none;" height="200px">
-      </canvas>
+      <canvas class="output_canvas" style="width: 700px; height: 500px; border: 1px solid #fff; display: flex; margin-top: -150px;"></canvas>
+      <canvas class="output_canvas2" style="width: 700px; height: 500px; border: 1px solid #fff; display: flex; margin-top: -150px;"></canvas>
+      <div class="overlay" style="text-align: center; font-size: 25px;">Movimiento detectado</div>
     </div>
-
 
     <div class="loading">
       <div class="spinner"></div>
-      <div class="message">
-        Loading
-      </div>
+      <div class="message">Cargando</div>
     </div>
 
-    <a class="abs logo" href="http://www.mediapipe.dev" target="_blank">
-      <div style="display: flex;align-items: center;bottom: 0;right: 10px;">
-        <img class="logo" src="logo_white.png" alt="" style="
-          height: 50px;">
-        <span class="title">MediaPipe</span>
-      </div>
-    </a>
-    
+    <div style="display: flex; justify-content: center;">
+      <button id="toggleButton" class="toggle-button">
+        <div class="button-left" id="startDetection">Detección</div>
+        <div class="button-right" id="stopDetection">Detener</div>
+      </button>
+    </div>
   </div>
-  <div class="control-panel">
-  </div>
-  <script type="module" src="./script.js"></script>
 
+
+  <div class="control-panel"></div>
+  <script type="module" src="./script.js"></script>
 </body>
 </html>
